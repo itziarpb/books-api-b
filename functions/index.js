@@ -22,20 +22,20 @@ const db = admin.firestore();
 app.post('/books', (req, res) => {
     (async () => {
         try {
-            const { title, author, genre } = req.body;
-            if (!title || !author || !author) {
-                return res.status(400).json({ error: 'All data is required' });
+            const { titulo, autor, genero } = req.body;
+            if (!titulo || !autor || !autor) {
+                return res.status(400).json({ error: 'Todos los datos son requeridos' });
             }
             const newBook = await db.collection('books').add({
-                title,
-                author,
-                genre
+                titulo,
+                autor,
+                genero
             });
             const newBookId = newBook.id;
-            return res.status(201).json({ message: 'Successfully created book.' });
+            return res.status(201).json({ message: 'Libro creado correctamente' });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: 'Internal Server Error' });
+            return res.status(500).json({ error: 'Error interno del servidor' });
         }
     })();
 });
@@ -49,14 +49,14 @@ app.get("/books", async (req, res) => {
 
         const response = docs.map((doc) => ({
             id: doc.id,
-            title: doc.data().title,
-            author: doc.data().author,
-            genre: doc.data().genre
+            titulo: doc.data().titulo,
+            autor: doc.data().autor,
+            genero: doc.data().genero
         }));
 
         return res.status(200).json(response);
     } catch (error) {
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Error interno del servidor' });
     }
 })
 
@@ -74,7 +74,7 @@ app.get("/books/:bookId", async (req, res) => {
             const response = book.data();
             return res.status(200).json(response)
         } catch (error) {
-            return res.status(500).json({ error: 'Internal Server Error' });
+            return res.status(500).json({ error: 'Error interno del servidor' });
         }
     })();
 })
@@ -82,26 +82,26 @@ app.get("/books/:bookId", async (req, res) => {
 //Creamos un put que modifique los datos de un libro ya existente
 app.put('/books/:bookId', async (req, res) => {
     try {
-        const { title, author, genre } = req.body;
+        const { titulo, autor, genero } = req.body;
 
         const bookRef = db.collection('books').doc(req.params.bookId);
         const book = await bookRef.get()
 
         if (!book.exists) {
-            return res.status(404).json({ error: 'Book not found' });
+            return res.status(404).json({ error: 'Libro no encontrado' });
         }
 
         const updateData = {};
-        if (title) updateData.title = title;
-        if (author) updateData.author = author;
-        if (genre) updateData.genre = genre;
+        if (titulo) updateData.titulo = titulo;
+        if (autor) updateData.autor = autor;
+        if (genero) updateData.genero = genero;
 
         await bookRef.update(updateData);
 
-        return res.status(200).json({ message: 'Book updated successfully.' });
+        return res.status(200).json({ message: 'Libro modificado correctamente.' });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
@@ -112,13 +112,13 @@ app.delete('/books/:bookId', async (req, res) => {
         const book = await bookRef.get()
 
         if (!book.exists) {
-            return res.status(404).json({ error: 'Book not found' });
+            return res.status(404).json({ error: 'Libro no encontrado' });
         }
 
         // Eliminar el libro
         await bookRef.delete();
 
-        return res.status(200).json({ message: 'Book successfully deleted' });
+        return res.status(200).json({ message: 'Libro borrado correctamente' });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Error interno del servidor' });
